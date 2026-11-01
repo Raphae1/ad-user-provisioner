@@ -1,0 +1,6 @@
+{
+  "company_domain": "corp.local",
+  "username_format": "first_initial + last_name",
+  "default_temp_password": "ChangeMe123!",
+  "base_home_directory": "./mock_shares"
+}
