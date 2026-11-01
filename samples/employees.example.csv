@@ -1,0 +1,4 @@
+employee_id,first_name,last_name,department,role,start_date,action
+EMP1001,Sarah,Jenkins,Engineering,Software Engineer,2026-11-01,onboard
+EMP1002,Marcus,Vance,Finance,Financial Analyst,2026-11-01,onboard
+EMP1003,Elena,Rostova,IT,Systems Administrator,2026-11-01,onboard

@@ -1,0 +1,3 @@
+﻿# Core dependencies (Phase 1 uses standard library only)
+# Development & Testing Dependencies (Phase 2+)
+pytest>=7.0.0
