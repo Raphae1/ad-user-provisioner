@@ -8,7 +8,7 @@ from ad_provisioner.database import AuditDatabase
 
 def main():
     print("==================================================")
-    print("       AD USER PROVISIONER - PHASE 2 (AUDIT)")
+    print("       AD USER PROVISIONER - PHASE 2 (AUDIT)     ")
     print("==================================================")
 
     # 1. Load Configuration
@@ -21,6 +21,7 @@ def main():
     domain = config.get("company_domain", "corp.local")
     dry_run = config.get("dry_run_default", True)
     allowed_depts = config.get("allowed_departments", [])
+    naming_fmt = config.get("username_format", "first_initial + last_name")
 
     print(f"[*] Loaded Domain: {domain}")
     print(f"[*] Dry-Run Mode: {dry_run}")
@@ -46,21 +47,21 @@ def main():
     with open(csv_path, mode="r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row_num, row in enumerate(reader, start=1):
-            full_name = f\"{row.get('first_name', '')} {row.get('last_name', '')}\".strip()
+            full_name = f"{row.get('first_name', '')} {row.get('last_name', '')}".strip()
             emp_id = row.get('employee_id', 'UNKNOWN')
             dept = row.get('department', '')
             action = row.get('action', 'CREATE')
 
-            print(f\"--------------------------------------------------\")
-            print(f\"Processing Row {row_num}: {full_name or 'Unknown'} ({emp_id})\")
+            print(f"--------------------------------------------------")
+            print(f"Processing Row {row_num}: {full_name or 'Unknown'} ({emp_id})")
 
-            # Validate Record
-            is_valid, errors = validate_employee_record(row, allowed_depts)
+            # Validate Record (returns list of errors if any)
+            errors = validate_employee_record(row, allowed_depts)
 
-            if not is_valid:
-                print(f\"  [REJECTED] Validation failed for row {row_num}:\")
+            if errors:
+                print(f"  [REJECTED] Validation failed for row {row_num}:")
                 for err in errors:
-                    print(f\"    - {err}\")
+                    print(f"    - {err}")
                 rejected_count += 1
                 
                 # Log Rejection to Database
@@ -69,32 +70,32 @@ def main():
                     full_name=full_name,
                     department=dept,
                     action=action,
-                    status=\"REJECTED\",
-                    details=\"; \".join(errors)
+                    status="REJECTED",
+                    details="; ".join(errors)
                 )
                 continue
 
-            print(f\"  [PASSED] Validation successful.\")
+            print(f"  [PASSED] Validation successful.")
 
             # Generate Credentials & Identity
-            username = generate_username(row['first_name'], row['last_name'], domain)
+            username = generate_username(row['first_name'], row['last_name'], naming_fmt)
             email = generate_email(username, domain)
             password = generate_secure_password()
 
             credentials = {
-                \"username\": username,
-                \"email\": email,
-                \"password\": password
+                "username": username,
+                "email": email,
+                "password": password
             }
 
             # Execute Provisioning via Adapter
             result = adapter.provision_user(row, credentials, dry_run=dry_run)
             
-            print(f\"  [IDENTITY] Generated Username: {username} | Email: {email}\")
+            print(f"  [IDENTITY] Generated Username: {username} | Email: {email}")
             if dry_run:
-                print(f\"  [DRY-RUN] Would create directory: {result['path']}\")
+                print(f"  [DRY-RUN] Would create directory: {result['path']}")
             else:
-                print(f\"  [SIMULATED] Created directory at: {result['path']}\")
+                print(f"  [SIMULATED] Created directory at: {result['path']}")
 
             successful_count += 1
 
@@ -104,15 +105,15 @@ def main():
                 full_name=full_name,
                 department=dept,
                 action=action,
-                status=\"SUCCESS\",
-                details=f\"Provisioned user {username} at {result['path']}\"
+                status="SUCCESS",
+                details=f"Provisioned user {username} at {result['path']}"
             )
 
-    print(f\"\n==================================================\")
-    print(f\" Provisioning Job Complete & Audited.\")
-    print(f\" Successful: {successful_count} | Rejected/Failed: {rejected_count}\")
+    print(f"\n==================================================")
+    print(f" Provisioning Job Complete & Audited.")
+    print(f" Successful: {successful_count} | Rejected/Failed: {rejected_count}")
     print(f" [AUDIT] Events successfully committed to audit.db")
-    print(f\"==================================================\")
+    print(f"==================================================")
 
-if __name__ == \"__main__\":
+if __name__ == "__main__":
     main()

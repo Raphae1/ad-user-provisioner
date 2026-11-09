@@ -1,0 +1,9 @@
+﻿{
+  "domain": "domain.local",
+  "default_ou": "OU=Users,OU=Corp,DC=domain,DC=local",
+  "password_policy": {
+    "min_length": 10,
+    "require_special": true
+  },
+  "dry_run_default": true
+}

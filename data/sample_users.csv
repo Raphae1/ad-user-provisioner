@@ -1,0 +1,4 @@
+﻿FirstName,LastName,Department,Email,Manager
+John,Doe,Engineering,john.doe@domain.local,admin@domain.local
+Jane,Smith,Finance,jane.smith@domain.local,admin@domain.local
+Alex,Jones,IT,alex.jones@domain.local,admin@domain.local

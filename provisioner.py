@@ -1,4 +1,4 @@
-import argparse
+﻿import argparse
 import sys
 import time
 
@@ -13,7 +13,7 @@ def process_lifecycle_batch(csv_path, dry_run=False):
     Core lifecycle batch processing engine supporting ONBOARD, TRANSFER, and OFFBOARD.
     """
     print(f"\n[*] Loading lifecycle records from: {csv_path}")
-    print(f"[*] Execution Mode: {'DRY-RUN (Simulation)' if dry_run else 'LIVE PROCESSING'}")
+    print(f"[*] Execution Mode: {'DRY-RUN (Simulation)' if dry_run else 'SIMULATED EXECUTION (In-Memory)'}")
     
     start_time = time.time()
     
@@ -49,7 +49,7 @@ def process_lifecycle_batch(csv_path, dry_run=False):
                 continue
         elif action in ["TRANSFER", "OFFBOARD"]:
             if not user_exists:
-                print(f"    [X] Failure: Cannot {action.lower()} user '{uname}'—account not found in directory.")
+                print(f"    [X] Failure: Cannot {action.lower()} user '{uname}'â€”account not found in directory.")
                 failure_count += 1
                 continue
                 
